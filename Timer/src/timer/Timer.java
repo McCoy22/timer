@@ -3,6 +3,7 @@ package timer;
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DateFormat;
@@ -28,7 +29,7 @@ public class Timer
 	// TODO Einfärben je nach Zeit (Halbzeit / Endezeit!)
 
 	// TODO Zeit dynamisch machen
-	private static long MAX_TIME = 12 * 60 * 1000;
+	private static long MAX_TIME = 1 * 30 * 1000;
 
 	private JPanel contentPane;
 	private JLabel timerLabel;
@@ -132,6 +133,8 @@ public class Timer
 				Timer.this.timerTimer = new javax.swing.Timer(1000, new RecalculateTimerActionListener());
 				Timer.this.timerTimer.start();
 
+				Toolkit.getDefaultToolkit().beep();
+				
 				Timer.this.startButton.setText("STOP");
 				Timer.this.startButton.setBackground(Color.RED);
 				Timer.this.status = TimerState.RUNNING;
