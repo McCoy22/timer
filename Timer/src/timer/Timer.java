@@ -18,24 +18,22 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
-import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.ImageIcon;
 
 @SuppressWarnings("serial")
 public class Timer
 		extends JFrame {
 
-	// TODO Zeit dynamisch machen
 	private long MAX_TIME = 13;
 
 	private JPanel contentPane;
 	private JLabel timerLabel;
 	private JButton startButton;
 	private JProgressBar progressBar;
-
+	private JLabel achtungLabel;
 	private static DateFormat sdf = DateFormat.getTimeInstance();
 	private static DateFormat timerFormat = new SimpleDateFormat("mm:ss");
 
@@ -114,8 +112,8 @@ public class Timer
 		timerTimeLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		timerTimeLabel.setFont(new Font("Tahoma", Font.PLAIN, 40));
 		
-		plusBtn = new JButton("");
-		plusBtn.setIcon(new ImageIcon(Timer.class.getResource("/timer/plus.png")));
+		plusBtn = new JButton("+");
+		plusBtn.setIcon(null);
 		plusBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (MAX_TIME < 31) {
@@ -125,11 +123,16 @@ public class Timer
 			}
 		});
 		plusBtn.setFont(new Font("Tahoma", Font.PLAIN, 30));
+		
+		achtungLabel = new JLabel("");
+		achtungLabel.setForeground(Color.RED);
+		achtungLabel.setFont(new Font("Tahoma", Font.BOLD, 50));
+		achtungLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
 		GroupLayout gl_contentPane = new GroupLayout(this.contentPane);
 		gl_contentPane.setHorizontalGroup(
 			gl_contentPane.createParallelGroup(Alignment.TRAILING)
-				.addGroup(gl_contentPane.createSequentialGroup()
+				.addGroup(Alignment.LEADING, gl_contentPane.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
 						.addComponent(timerLabel, GroupLayout.DEFAULT_SIZE, 976, Short.MAX_VALUE)
@@ -138,32 +141,35 @@ public class Timer
 							.addComponent(startButton, GroupLayout.PREFERRED_SIZE, 250, GroupLayout.PREFERRED_SIZE)
 							.addGap(18)
 							.addComponent(label, GroupLayout.PREFERRED_SIZE, 93, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(minusBtn, GroupLayout.PREFERRED_SIZE, 67, GroupLayout.PREFERRED_SIZE)
 							.addGap(18)
-							.addComponent(timerTimeLabel, GroupLayout.PREFERRED_SIZE, 46, GroupLayout.PREFERRED_SIZE)
+							.addComponent(minusBtn, GroupLayout.PREFERRED_SIZE, 56, GroupLayout.PREFERRED_SIZE)
 							.addGap(18)
-							.addComponent(plusBtn, GroupLayout.PREFERRED_SIZE, 57, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED, 123, Short.MAX_VALUE)
-							.addComponent(clock, GroupLayout.PREFERRED_SIZE, 281, GroupLayout.PREFERRED_SIZE)))
+							.addComponent(timerTimeLabel, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE)
+							.addGap(18)
+							.addComponent(plusBtn)
+							.addPreferredGap(ComponentPlacement.RELATED, 119, Short.MAX_VALUE)
+							.addComponent(clock, GroupLayout.PREFERRED_SIZE, 281, GroupLayout.PREFERRED_SIZE))
+						.addComponent(achtungLabel, GroupLayout.DEFAULT_SIZE, 976, Short.MAX_VALUE))
 					.addContainerGap())
 		);
 		gl_contentPane.setVerticalGroup(
 			gl_contentPane.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_contentPane.createSequentialGroup()
 					.addContainerGap()
-					.addComponent(timerLabel, GroupLayout.PREFERRED_SIZE, 398, Short.MAX_VALUE)
-					.addGap(36)
-					.addComponent(progressBar, GroupLayout.PREFERRED_SIZE, 60, GroupLayout.PREFERRED_SIZE)
+					.addComponent(timerLabel, GroupLayout.PREFERRED_SIZE, 325, Short.MAX_VALUE)
+					.addGap(18)
+					.addComponent(achtungLabel, GroupLayout.DEFAULT_SIZE, 73, Short.MAX_VALUE)
+					.addGap(18)
+					.addComponent(progressBar, GroupLayout.DEFAULT_SIZE, 60, Short.MAX_VALUE)
 					.addGap(32)
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
 						.addComponent(startButton, GroupLayout.PREFERRED_SIZE, 108, GroupLayout.PREFERRED_SIZE)
 						.addComponent(clock)
 						.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING, false)
 							.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
-								.addComponent(minusBtn, GroupLayout.DEFAULT_SIZE, 65, Short.MAX_VALUE)
-								.addComponent(timerTimeLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-								.addComponent(plusBtn))
+								.addComponent(minusBtn, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE)
+								.addComponent(timerTimeLabel, GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
+								.addComponent(plusBtn, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE))
 							.addComponent(label, GroupLayout.DEFAULT_SIZE, 48, Short.MAX_VALUE)))
 					.addContainerGap())
 		);
@@ -189,7 +195,8 @@ public class Timer
 				Timer.this.progressBar.setMaximum(Math.toIntExact(Timer.this.MAX_TIME * 60 * 1000));
 				Timer.this.progressBar.setValue(0);
 				Timer.this.timerLabel.setText("00:00");
-
+				Timer.this.achtungLabel.setText("");
+				
 				Timer.this.timerTimer = new javax.swing.Timer(1000, new RecalculateTimerActionListener());
 				Timer.this.timerTimer.start();
 
@@ -239,6 +246,7 @@ public class Timer
 			// Ende
 			if (time > (Timer.this.MAX_TIME * 60 * 1000)) {
 				Timer.this.timerTimer.stop();
+				Timer.this.achtungLabel.setText("");
 
 				Toolkit.getDefaultToolkit().beep();
 
@@ -256,13 +264,18 @@ public class Timer
 			} else if (time > ((Timer.this.MAX_TIME * 60 * 1000) - 10 * 1000)) {
 				Timer.this.progressBar.setForeground(Color.RED);
 				Timer.this.contentPane.setBackground(Color.YELLOW);
+				Timer.this.achtungLabel.setText("ACHTUNG! Spielende!!!");
+				Timer.this.achtungLabel.setForeground(Color.RED);
 				// Halbzeit (10 Sekunden vorher)
 			} else if ((time > ((Timer.this.MAX_TIME * 30 * 1000) - 10 * 1000)) && (time < Timer.this.MAX_TIME * 30 * 1000)) {
 				Timer.this.progressBar.setForeground(Color.ORANGE);
 				Timer.this.contentPane.setBackground(Color.GREEN);
+				Timer.this.achtungLabel.setForeground(Color.MAGENTA);
+				Timer.this.achtungLabel.setText("ACHTUNG! Halbzeit!!!");
 			} else {
 				Timer.this.progressBar.setForeground(Color.BLUE);
 				Timer.this.contentPane.setBackground(Color.WHITE);
+				Timer.this.achtungLabel.setText("");
 			}
 		}
 	}
