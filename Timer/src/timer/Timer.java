@@ -18,26 +18,25 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
-import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingConstants;
+import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
 @SuppressWarnings("serial")
 public class Timer
 		extends JFrame {
 
-	// TODO Einfärben je nach Zeit (Halbzeit / Endezeit!)
-
 	// TODO Zeit dynamisch machen
-	private static long MAX_TIME = 1 * 30 * 1000;
+	private long MAX_TIME = 1;
 
 	private JPanel contentPane;
 	private JLabel timerLabel;
 	private JButton startButton;
+	JButton configTimeButton;
 	private JProgressBar progressBar;
 
-	private DateFormat sdf = DateFormat.getTimeInstance();
-	private DateFormat timerFormat = new SimpleDateFormat("mm:ss");
+	private static DateFormat sdf = DateFormat.getTimeInstance();
+	private static DateFormat timerFormat = new SimpleDateFormat("mm:ss");
 
 	enum TimerState {
 		STOPPED,
@@ -73,6 +72,7 @@ public class Timer
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setBounds(100, 100, 1028, 717);
 		this.contentPane = new JPanel();
+		this.contentPane.setBackground(Color.WHITE);
 		this.contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		this.setContentPane(this.contentPane);
 
@@ -86,35 +86,40 @@ public class Timer
 		this.startButton.setBackground(Color.GREEN);
 		this.startButton.addActionListener(new StartButtonActionListener());
 
-		JLabel clock = new JLabel(this.sdf.format(new Date()));
+		JLabel clock = new JLabel(Timer.sdf.format(new Date()));
 		clock.setHorizontalAlignment(SwingConstants.RIGHT);
 		clock.setFont(new Font("Tahoma", Font.PLAIN, 60));
 
 		this.progressBar = new JProgressBar();
+
+		this.configTimeButton = new JButton("" + this.MAX_TIME);
+		this.configTimeButton.setFont(new Font("Tahoma", Font.PLAIN, 30));
+
 		GroupLayout gl_contentPane = new GroupLayout(this.contentPane);
 		gl_contentPane.setHorizontalGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING).addGroup(gl_contentPane
 				.createSequentialGroup().addContainerGap().addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
-						.addComponent(this.progressBar, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 982, Short.MAX_VALUE)
 						.addComponent(this.timerLabel, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 982, Short.MAX_VALUE)
-						.addGroup(gl_contentPane.createSequentialGroup().addComponent(this.startButton,
-								GroupLayout.PREFERRED_SIZE, 250, GroupLayout.PREFERRED_SIZE).addPreferredGap(
-										ComponentPlacement.RELATED, 469, Short.MAX_VALUE).addComponent(clock,
-												GroupLayout.PREFERRED_SIZE, 263, GroupLayout.PREFERRED_SIZE)))
+						.addComponent(this.progressBar, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 982, Short.MAX_VALUE)
+						.addGroup(Alignment.LEADING, gl_contentPane.createSequentialGroup().addComponent(this.startButton,
+								GroupLayout.PREFERRED_SIZE, 250, GroupLayout.PREFERRED_SIZE).addGap(18).addComponent(
+										this.configTimeButton, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
+								.addGap(351).addComponent(clock, GroupLayout.DEFAULT_SIZE, 263, Short.MAX_VALUE)))
 				.addContainerGap()));
 		gl_contentPane.setVerticalGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING).addGroup(gl_contentPane
-				.createSequentialGroup().addContainerGap().addComponent(this.timerLabel, GroupLayout.DEFAULT_SIZE,
-						GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).addPreferredGap(ComponentPlacement.RELATED).addComponent(
-								this.progressBar, GroupLayout.PREFERRED_SIZE, 60, GroupLayout.PREFERRED_SIZE).addGap(63).addGroup(
-										gl_contentPane.createParallelGroup(Alignment.TRAILING).addComponent(this.startButton,
-												GroupLayout.PREFERRED_SIZE, 94, GroupLayout.PREFERRED_SIZE).addComponent(clock,
-														GroupLayout.PREFERRED_SIZE, 94, GroupLayout.PREFERRED_SIZE))
+				.createSequentialGroup().addContainerGap().addComponent(this.timerLabel, GroupLayout.PREFERRED_SIZE, 394,
+						Short.MAX_VALUE).addGap(36).addComponent(this.progressBar, GroupLayout.PREFERRED_SIZE, 60,
+								GroupLayout.PREFERRED_SIZE).addGap(63).addGroup(gl_contentPane.createParallelGroup(
+										Alignment.TRAILING, false).addComponent(clock, GroupLayout.DEFAULT_SIZE,
+												GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE).addComponent(this.configTimeButton,
+														GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+										.addComponent(this.startButton, GroupLayout.DEFAULT_SIZE, 94, Short.MAX_VALUE))
 				.addContainerGap()));
 		this.contentPane.setLayout(gl_contentPane);
 
 		javax.swing.Timer clockTimer = new javax.swing.Timer(1000, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				clock.setText(Timer.this.sdf.format(new Date()));
+				clock.setText(Timer.sdf.format(new Date()));
 			}
 		});
 		clockTimer.start();
@@ -128,18 +133,21 @@ public class Timer
 			switch (Timer.this.status) {
 			case STOPPED:
 				Timer.this.timerStartTime = System.currentTimeMillis();
-				Timer.this.progressBar.setMaximum(Math.toIntExact(MAX_TIME));
+				Timer.this.progressBar.setMaximum(Math.toIntExact(Timer.this.MAX_TIME * 60 * 1000));
+				Timer.this.progressBar.setValue(0);
+				Timer.this.timerLabel.setText("00:00");
 
 				Timer.this.timerTimer = new javax.swing.Timer(1000, new RecalculateTimerActionListener());
 				Timer.this.timerTimer.start();
 
 				Toolkit.getDefaultToolkit().beep();
-				
+
 				Timer.this.startButton.setText("STOP");
 				Timer.this.startButton.setBackground(Color.RED);
 				Timer.this.status = TimerState.RUNNING;
 
-				Timer.this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+				Timer.this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+				Timer.this.configTimeButton.setEnabled(false);
 
 				break;
 			case RUNNING:
@@ -157,6 +165,7 @@ public class Timer
 					Timer.this.status = TimerState.STOPPED;
 
 					Timer.this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+					Timer.this.configTimeButton.setEnabled(true);
 				}
 				break;
 			}
@@ -168,11 +177,11 @@ public class Timer
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			long time = System.currentTimeMillis() - Timer.this.timerStartTime;
-			Timer.this.timerLabel.setText(Timer.this.timerFormat.format(new Date(time)));
+			Timer.this.timerLabel.setText(Timer.timerFormat.format(new Date(time)));
 			Timer.this.progressBar.setValue(Math.toIntExact(time));
 
 			// Ende
-			if (time > MAX_TIME) {
+			if (time > (Timer.this.MAX_TIME * 60 * 1000)) {
 				Timer.this.timerTimer.stop();
 
 				Timer.this.progressBar.setForeground(Color.BLUE);
@@ -182,11 +191,16 @@ public class Timer
 				Timer.this.startButton.setBackground(Color.GREEN);
 				Timer.this.status = TimerState.STOPPED;
 				Timer.this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				Timer.this.configTimeButton.setEnabled(true);
 
 				// Ende (10 Sekunden vorher)
-			} else if (time > (MAX_TIME - 10 * 1000)) {
+			} else if (time > ((Timer.this.MAX_TIME * 60 * 1000) - 10 * 1000)) {
 				Timer.this.progressBar.setForeground(Color.RED);
 				Timer.this.contentPane.setBackground(Color.ORANGE);
+				// Halbzeit (10 Sekunden vorher)
+			} else if ((time > ((Timer.this.MAX_TIME * 30 * 1000) - 10 * 1000)) && (time < Timer.this.MAX_TIME * 30 * 1000)) {
+				Timer.this.progressBar.setForeground(Color.ORANGE);
+				Timer.this.contentPane.setBackground(Color.YELLOW);
 			} else {
 				Timer.this.progressBar.setForeground(Color.BLUE);
 				Timer.this.contentPane.setBackground(Color.WHITE);
