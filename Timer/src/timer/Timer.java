@@ -22,6 +22,7 @@ import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.ImageIcon;
 
 @SuppressWarnings("serial")
 public class Timer
@@ -111,9 +112,10 @@ public class Timer
 		
 		timerTimeLabel = new JLabel("13");
 		timerTimeLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		timerTimeLabel.setFont(new Font("Tahoma", Font.PLAIN, 30));
+		timerTimeLabel.setFont(new Font("Tahoma", Font.PLAIN, 40));
 		
-		plusBtn = new JButton("+");
+		plusBtn = new JButton("");
+		plusBtn.setIcon(new ImageIcon(Timer.class.getResource("/timer/plus.png")));
 		plusBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (MAX_TIME < 31) {
@@ -141,8 +143,8 @@ public class Timer
 							.addGap(18)
 							.addComponent(timerTimeLabel, GroupLayout.PREFERRED_SIZE, 46, GroupLayout.PREFERRED_SIZE)
 							.addGap(18)
-							.addComponent(plusBtn, GroupLayout.PREFERRED_SIZE, 67, GroupLayout.PREFERRED_SIZE)
-							.addPreferredGap(ComponentPlacement.RELATED, 113, Short.MAX_VALUE)
+							.addComponent(plusBtn, GroupLayout.PREFERRED_SIZE, 57, GroupLayout.PREFERRED_SIZE)
+							.addPreferredGap(ComponentPlacement.RELATED, 123, Short.MAX_VALUE)
 							.addComponent(clock, GroupLayout.PREFERRED_SIZE, 281, GroupLayout.PREFERRED_SIZE)))
 					.addContainerGap())
 		);
@@ -157,12 +159,12 @@ public class Timer
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
 						.addComponent(startButton, GroupLayout.PREFERRED_SIZE, 108, GroupLayout.PREFERRED_SIZE)
 						.addComponent(clock)
-						.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING, false)
-							.addGroup(Alignment.TRAILING, gl_contentPane.createParallelGroup(Alignment.BASELINE)
-								.addComponent(minusBtn, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+						.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING, false)
+							.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+								.addComponent(minusBtn, GroupLayout.DEFAULT_SIZE, 65, Short.MAX_VALUE)
 								.addComponent(timerTimeLabel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-								.addComponent(plusBtn, GroupLayout.PREFERRED_SIZE, 45, GroupLayout.PREFERRED_SIZE))
-							.addComponent(label, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 48, Short.MAX_VALUE)))
+								.addComponent(plusBtn))
+							.addComponent(label, GroupLayout.DEFAULT_SIZE, 48, Short.MAX_VALUE)))
 					.addContainerGap())
 		);
 		this.contentPane.setLayout(gl_contentPane);
