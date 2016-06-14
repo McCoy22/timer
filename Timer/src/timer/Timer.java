@@ -49,6 +49,9 @@ public class Timer
 	private JButton minusBtn;
 	private JButton plusBtn;
 
+	private javax.swing.Timer afterTimer;
+	private long afterTime;
+	
 	/**
 	 * Launch the application.
 	 */
@@ -80,6 +83,7 @@ public class Timer
 		this.setContentPane(this.contentPane);
 
 		this.timerLabel = new JLabel("00:00");
+		timerLabel.setForeground(Color.BLACK);
 		this.timerLabel.setVerticalAlignment(SwingConstants.CENTER);
 		this.timerLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		this.timerLabel.setFont(new Font("Arial Black", this.timerLabel.getFont().getStyle(), 300));
@@ -197,6 +201,10 @@ public class Timer
 				Timer.this.timerLabel.setText("00:00");
 				Timer.this.achtungLabel.setText("");
 				
+				if (Timer.this.afterTimer != null && Timer.this.afterTimer.isRunning()) {
+					Timer.this.afterTimer.stop();
+				}
+				
 				Timer.this.timerTimer = new javax.swing.Timer(1000, new RecalculateTimerActionListener());
 				Timer.this.timerTimer.start();
 
@@ -246,7 +254,8 @@ public class Timer
 			// Ende
 			if (time > (Timer.this.MAX_TIME * 60 * 1000)) {
 				Timer.this.timerTimer.stop();
-				Timer.this.achtungLabel.setText("");
+				Timer.this.achtungLabel.setForeground(Color.BLACK);
+				Timer.this.achtungLabel.setText("00:00");
 
 				Toolkit.getDefaultToolkit().beep();
 
@@ -260,6 +269,15 @@ public class Timer
 				Timer.this.minusBtn.setEnabled(true);
 				Timer.this.plusBtn.setEnabled(true);
 
+				Timer.this.afterTime = System.currentTimeMillis();
+				Timer.this.afterTimer = new javax.swing.Timer(1000, new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						long time = System.currentTimeMillis() - Timer.this.afterTime;
+						Timer.this.achtungLabel.setText(Timer.timerFormat.format(time));
+					}
+				});
+				Timer.this.afterTimer.start();
 				// Ende (10 Sekunden vorher)
 			} else if (time > ((Timer.this.MAX_TIME * 60 * 1000) - 10 * 1000)) {
 				Timer.this.progressBar.setForeground(Color.RED);
